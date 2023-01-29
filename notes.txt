@@ -1,1 +1,28 @@
-notes.txt
+Flask Server that simulates aircraft movement from point a to point b to point c
+
+database holds
+aircraft object
+current_lat
+current_long
+2nd_lat
+2nd_long
+3rd_lat
+3rd_long
+altitude
+speed
+last reported position
+bearing?
+type
+group?
+
+perhaps there is a database with aircraft_type?
+so F16, F18, F22, etc they all have speeds prebuilt for cruising speed
+
+there can be groups
+
+maybe what it does is figure out the lat long by calculating last reported position + bearing * speed
+perhaps the destination lat longs can be set by a zip code
+
+
+api 
+create object 
