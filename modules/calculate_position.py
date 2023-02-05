@@ -3,7 +3,7 @@ import geopy
 from geopy.distance import geodesic
 
 
-def calculate(lat1, lon1, distance, bearing)
+def calculate(lat1, lon1, distance, bearing):
   # given: lat1, lon1, b = bearing in degrees, d = distance in kilometers
   # lat1 = 35.79225921965943
   # lon1 = -103.36822768355603
