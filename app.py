@@ -1,6 +1,8 @@
 from modules import calculate_position as position
 from flask import Flask, redirect, url_for, render_template, request, session, jsonify
 import pdb
+import yaml
+import time
 
 app = Flask(__name__)
 
@@ -20,6 +22,23 @@ def set_aircraft_data():
 
 	new_lat, new_long = position.calculate(latitude,longitude,distance,bearing)
 	return jsonify({'latitude': new_lat, 'longitude': new_long })
+
+@app.route('/start', methods=['POST'])
+def start_flying():
+	# identify the aircraft name from keys passed
+	aircraft_name 	= request.args.get('aircraft_name')
+
+	# open the yaml file to read, load the yaml to be a python object
+	stream = open('aircraft.yaml', 'r+')
+	vessels = yaml.load_all(stream)
+	
+	# find the vessel name we are starting, set current time (time since epoch)
+	for vessel in vessels:
+		# pdb.set_trace()
+		if(vessel["name"] == aircraft_name):
+			vessel["start_time"] = time.time()
+
+	yaml.dump(vessels, stream)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

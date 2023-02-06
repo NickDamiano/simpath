@@ -26,3 +26,7 @@ perhaps the destination lat longs can be set by a zip code
 
 api 
 create object 
+
+
+
+Ok so we can have waypoints that belong to an aircraft. and what it will do is calculate distance to waypoint 2 and if time is greater
