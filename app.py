@@ -41,7 +41,7 @@ def start_flying():
 	yaml.dump(vessels, stream)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
 
 # arg1=value1&arg2=value2
 # print(result1)
