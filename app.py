@@ -29,8 +29,8 @@ def start_flying():
 	aircraft_name 	= request.args.get('aircraft_name')
 
 	# open the yaml file to read, load the yaml to be a python object
-	stream = open('aircraft.yaml', 'r+')
-	vessels = yaml.load_all(stream)
+	file = open('aircraft', 'rb')
+	vessels = pickle.load(file)
 	
 	# find the vessel name we are starting, set current time (time since epoch)
 	for vessel in vessels:
