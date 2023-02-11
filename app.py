@@ -1,7 +1,7 @@
 from modules import calculate_position as position
 from flask import Flask, redirect, url_for, render_template, request, session, jsonify
 import pdb
-import yaml
+import pickle
 import time
 
 app = Flask(__name__)
@@ -23,22 +23,48 @@ def set_aircraft_data():
 	new_lat, new_long = position.calculate(latitude,longitude,distance,bearing)
 	return jsonify({'latitude': new_lat, 'longitude': new_long })
 
-@app.route('/start', methods=['POST'])
-def start_flying():
-	# identify the aircraft name from keys passed
-	aircraft_name 	= request.args.get('aircraft_name')
-
-	# open the yaml file to read, load the yaml to be a python object
+@app.route('/getallaircraft', methods=['GET'])
+def print_all_aircraft():
+	# open the file to read, load the file to be a python object
 	file = open('aircraft', 'rb')
 	vessels = pickle.load(file)
 	
 	# find the vessel name we are starting, set current time (time since epoch)
-	for vessel in vessels:
-		# pdb.set_trace()
-		if(vessel["name"] == aircraft_name):
-			vessel["start_time"] = time.time()
+	return jsonify(vessels)
 
-	yaml.dump(vessels, stream)
+@app.route('/start', methods=['POST'])
+def start_flying():
+	start_time = ""
+	# identify the aircraft name from keys passed
+	aircraft_name 	= request.args.get('aircraft_name')
+	vessels = loadall('aircraft')
+
+	# convert generator object to dict
+	pdb.set_trace()
+	vessels_dict = {vessel.name:vessel.value for vessel in vessels}
+
+	# # open the file to read, load the file to be a python object
+	# r_file = open('aircraft', 'rb')
+	# vessels = pickle.load(r_file)
+	# r_file.close()
+	
+	# find the vessel name we are starting, set current time (time since epoch)
+	for vessel in vessels_dict:
+		if(vessel["name"] == aircraft_name):
+			start_time = time.time()
+			vessel["start_time"] = start_time
+
+	w_file = open('aircraft', 'wb')
+	pickle.dump(vessels_dict, w_file)
+	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
+
+def loadall(file_name):
+	with open(file_name, "rb") as r_file:
+		while True:
+			try:
+				yield pickle.load(r_file)
+			except EOFError:
+				break
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
