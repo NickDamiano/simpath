@@ -40,14 +40,8 @@ def start_flying():
 	vessels = loadall('aircraft')
 
 	# convert generator object to dict
-	pdb.set_trace()
-	vessels_dict = {vessel.name:vessel.value for vessel in vessels}
+	vessels_dict = list(vessels)
 
-	# # open the file to read, load the file to be a python object
-	# r_file = open('aircraft', 'rb')
-	# vessels = pickle.load(r_file)
-	# r_file.close()
-	
 	# find the vessel name we are starting, set current time (time since epoch)
 	for vessel in vessels_dict:
 		if(vessel["name"] == aircraft_name):
