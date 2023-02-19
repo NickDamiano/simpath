@@ -31,7 +31,10 @@ def get_all_positions():
 		end_point = aircraft["waypoints"][1]
 		current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
 			end_point["latitude"], end_point["longitude"])
-		new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled,current_bearing)
+		new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled / 1000,current_bearing)
+		result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
+		aircraft_results.append(result)
+	return jsonify(aircraft_results)
 
 	return jsonify(current_bearing)
 	# iterate through all aircraft, if the time stamp isnt' blank then 
