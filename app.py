@@ -18,7 +18,29 @@ def test():
 # Returns all aircraft positions in json object
 @app.route('/AllAircraftPositions', methods=["GET"])
 def get_all_positions():
+	distance_traveled = 0
+	current_bearing = ""
+	aircraft_results = []
 	all_aircraft = convert_aircraft_to_python_object()
+	for aircraft in all_aircraft:
+		# current time minus start time * 0.514444 (knots to meters per second) times the speed of the aircraft
+		# 	= distance traveled converted to integer
+		distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
+		# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
+		start_point = aircraft["waypoints"][0]
+		end_point = aircraft["waypoints"][1]
+		current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
+			end_point["latitude"], end_point["longitude"])
+		new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled,current_bearing)
+
+	return jsonify(current_bearing)
+	# iterate through all aircraft, if the time stamp isnt' blank then 
+	# calculate distance traveled
+	# calculate bearing between the points
+	# calculate new position
+	# add aircraft name and position to dictionary
+	# after loop return dictionary as json
+
 
 # returns calculation of new position with explicitly passed in paramters
 @app.route('/calculate_coords', methods=['GET'])
@@ -64,7 +86,7 @@ def convert_aircraft_to_python_object():
 
 	# convert generator object to dict
 	vessels_dict = list(vessels)
-	return vessels_dict
+	return vessels_dict[0]
 
 def loadall(file_name):
 	with open(file_name, "rb") as r_file:

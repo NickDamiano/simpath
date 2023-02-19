@@ -1,5 +1,7 @@
 import math
 import geopy
+import pyproj
+
 from geopy.distance import geodesic
 
 
@@ -16,6 +18,17 @@ def calculate(lat1, lon1, distance, bearing):
   return lat2, lon2
   print(lat2)
   print(lon2)
+
+def calculate_bearing(lat1, long1, lat2, long2):
+  geodesic = pyproj.Geod(ellps='WGS84')
+  fwd_azimuth,back_azimuth,distance = geodesic.inv(long1, lat1, long2, lat2)
+  return fwd_azimuth
+
+
+
+
+
+
 
 # def 
 # R = 6378.1  #Radius of the Earth
