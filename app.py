@@ -15,7 +15,11 @@ def test():
 	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
 	return jsonify({'longitude': new_long, 'latitude': new_lat })
 
-# Returns all aircraft positions in json object
+@app.route('/', methods=['POST'])
+def create_aircraft():
+	print("test")
+
+# Returns all aircraft positions in json object. gets 
 @app.route('/AllAircraftPositions', methods=["GET"])
 def get_all_positions():
 	distance_traveled = 0
@@ -35,15 +39,6 @@ def get_all_positions():
 		result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
 		aircraft_results.append(result)
 	return jsonify(aircraft_results)
-
-	return jsonify(current_bearing)
-	# iterate through all aircraft, if the time stamp isnt' blank then 
-	# calculate distance traveled
-	# calculate bearing between the points
-	# calculate new position
-	# add aircraft name and position to dictionary
-	# after loop return dictionary as json
-
 
 # returns calculation of new position with explicitly passed in paramters
 @app.route('/calculate_coords', methods=['GET'])
@@ -65,6 +60,8 @@ def print_all_aircraft():
 	# find the vessel name we are starting, set current time (time since epoch)
 	return jsonify(vessels)
 
+# Starts a specific aircraft's flight passed by name in url 
+# Sets the start time to current time in epoch and writes it back to the pickle
 @app.route('/start', methods=['POST'])
 def start_flying():
 	start_time = ""
@@ -83,6 +80,9 @@ def start_flying():
 	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
 
 # helper methods
+# Retrieves the aircraft from the pickle and creates a generator which is then
+# converted to a python dict and returned the first index. somehow it's a list within a list
+# so we just get the 0 index which is all the data
 def convert_aircraft_to_python_object():
 	# load pickle into generator
 	vessels = loadall('aircraft')
@@ -91,6 +91,7 @@ def convert_aircraft_to_python_object():
 	vessels_dict = list(vessels)
 	return vessels_dict[0]
 
+# loads all pickle data
 def loadall(file_name):
 	with open(file_name, "rb") as r_file:
 		while True:
