@@ -30,3 +30,10 @@ create object
 
 
 Ok so we can have waypoints that belong to an aircraft. and what it will do is calculate distance to waypoint 2 and if time is greater
+
+todo
+Create the endpoint to add 1 or more aircraft
+Use that to create aircraft for testing then verify the aircraft exist ( but how to do it so it doesn't touch aircraft file or how to restore original aircraft file afterwards)
+
+to have a formation of two fighters
+you can have a flag to put a ghost one on there that stays at 235 or 135 from the bearing 300 meters or 400 meters distancek

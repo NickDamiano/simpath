@@ -1,8 +1,9 @@
 from modules import calculate_position as position
-from flask import Flask, redirect, url_for, render_template, request, session, jsonify
+from flask import Flask, redirect, url_for, render_template, request, session, jsonify, Response
 import pdb
 import pickle
 import time
+import json
 
 
 app = Flask(__name__)
@@ -15,11 +16,42 @@ def test():
 	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
 	return jsonify({'longitude': new_long, 'latitude': new_lat })
 
-@app.route('/', methods=['POST'])
-def create_aircraft():
-	print("test")
+# Starts a specific aircraft's flight passed by name in url 
+# Sets the start time to current time in epoch and writes it back to the pickle
+@app.route('/start', methods=['POST'])
+def start_flying():
+	start_time = ""
+	# identify the aircraft name from keys passed
+	aircraft_name 	= request.args.get('aircraft_name')
+	vessels_dict = convert_aircraft_to_python_object()
 
-# Returns all aircraft positions in json object. gets 
+	# find the vessel name we are starting, set current time (time since epoch)
+	for vessel in vessels_dict:
+		if(vessel["name"] == aircraft_name):
+			start_time = time.time()
+			vessel["start_time"] = start_time
+
+	write_aircraft(vessels_dict)
+	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
+
+@app.route('/CreateAircraft', methods=['POST'])
+def create_aircraft():
+	# parse arguments
+	# load pickle and update object before storing pickle
+	all_aircraft = convert_aircraft_to_python_object()
+	new_aircraft = request.get_json()
+	for aircraft in new_aircraft:
+		all_aircraft.append(aircraft)
+	write_aircraft(all_aircraft)
+	json_all_aircraft = json.dumps(all_aircraft)
+	return Response(json_all_aircraft, status=201, mimetype='application/json')
+
+# test_aircraft = { "name": "buttercup", "aircraft_type": "KC-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
+#  {"latitude": 32.744512, "longitude": -96.969403},
+#  {"latitude": 33.108040, "longitude": -96.607846}
+# ]}
+
+# Returns all aircraft positions in json object. 
 @app.route('/AllAircraftPositions', methods=["GET"])
 def get_all_positions():
 	distance_traveled = 0
@@ -60,36 +92,25 @@ def print_all_aircraft():
 	# find the vessel name we are starting, set current time (time since epoch)
 	return jsonify(vessels)
 
-# Starts a specific aircraft's flight passed by name in url 
-# Sets the start time to current time in epoch and writes it back to the pickle
-@app.route('/start', methods=['POST'])
-def start_flying():
-	start_time = ""
-	# identify the aircraft name from keys passed
-	aircraft_name 	= request.args.get('aircraft_name')
-	vessels_dict = convert_aircraft_to_python_object()
+########################################## helper methods ##########################################
 
-	# find the vessel name we are starting, set current time (time since epoch)
-	for vessel in vessels_dict:
-		if(vessel["name"] == aircraft_name):
-			start_time = time.time()
-			vessel["start_time"] = start_time
-
-	w_file = open('aircraft', 'wb')
-	pickle.dump(vessels_dict, w_file)
-	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
-
-# helper methods
 # Retrieves the aircraft from the pickle and creates a generator which is then
 # converted to a python dict and returned the first index. somehow it's a list within a list
 # so we just get the 0 index which is all the data
+
 def convert_aircraft_to_python_object():
 	# load pickle into generator
 	vessels = loadall('aircraft')
-
 	# convert generator object to dict
 	vessels_dict = list(vessels)
-	return vessels_dict[0]
+	if(len(vessels_dict) > 0):
+		return vessels_dict[0]
+	else:
+		return []
+
+def write_aircraft(aircraft_to_write):
+	w_file = open('aircraft', 'wb')
+	pickle.dump(aircraft_to_write, w_file)
 
 # loads all pickle data
 def loadall(file_name):
@@ -111,10 +132,3 @@ if __name__ == '__main__':
 # 	names_list = names.split(",")
 # 	for name in names_list:
 # 		distance = calculate_distance(name)
-
-
-# where was i? now i can update the time stamp so next step is to write a method that calculates the distance traveled in meters and returns
-# that and that is passed to the position.calculate new lat long. possibly write a method that is like get_position that has a url property for name 
-# of the aircraft. 
-# then take multiple names and calculate multiple positions and return those as json object. then record a demo showing a script
-# calling the api and updating a file that google earth is looking at. look back at the thing Cody 
