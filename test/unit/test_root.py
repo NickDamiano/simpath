@@ -35,9 +35,12 @@ def test_create_aircraft(client):
 	assert test_aircraft["cruising_speed"] == 450
 	assert test_aircraft["start_time"] == None
 
-# def test_start_by_name(client):
-# 	rv = client.post('/start')
-# 	
+def test_start_by_name(client):
+	rv = client.post('/start', json={
+		"aircraft_names": ["clipclop"]
+	})
+	json_data = rv.get_json()
+	assert json_data["start_time"] != ""
 
 #restore pickle aircraft file
 def restore():

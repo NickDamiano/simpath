@@ -14,16 +14,16 @@ def start_flying():
 	start_time = ""
 
 	# identify the aircraft name from keys passed
-	aircraft_name 	= request.args.get('aircraft_name')
-
+	aircraft_names	= request.get_json()
 	# Convert existing aircraft to python object
 	vessels_dict = convert_aircraft_to_python_object()
 
 	# find the vessel name we are starting, set current time (time since epoch)
-	for vessel in vessels_dict:
-		if(vessel["name"] == aircraft_name):
-			start_time = time.time()
-			vessel["start_time"] = start_time
+	for aircraft_name in aircraft_names["aircraft_names"]:
+		for vessel in vessels_dict:
+			if(vessel["name"] == aircraft_name):
+				start_time = time.time()
+				vessel["start_time"] = start_time
 
 	# Write the updated aircraft data back to file and return the name and start time as json object
 	write_aircraft(vessels_dict)
@@ -66,6 +66,7 @@ def get_all_positions():
 		# 	= distance traveled converted to integer
 		if aircraft["start_time"] != None:	
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
+			# 
 
 			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
 			start_point = aircraft["waypoints"][0]

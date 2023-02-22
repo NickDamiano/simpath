@@ -22,3 +22,10 @@ waypoint: lat,long
 waypoint: zipcode
 waypoint: City,ST
 
+
+implement waypoints, measuring distance to first if calculated distanced flown is greater, measure distance second to third etc
+
+for orbit, calculate 100 waypoints around the point, modulos to figure out where between it should fall, when it gets to last point go to first point and when it hits first point maybe it resets the time? i don't know there's a way to do this though and i'm close
+
+
+
