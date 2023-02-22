@@ -1,39 +1,24 @@
-Flask Server that simulates aircraft movement from point a to point b to point c
-
-database holds
-aircraft object
-current_lat
-current_long
-2nd_lat
-2nd_long
-3rd_lat
-3rd_long
-altitude
-speed
-last reported position
-bearing?
-type
-group?
-
-perhaps there is a database with aircraft_type?
-so F16, F18, F22, etc they all have speeds prebuilt for cruising speed
-
-there can be groups
-
-maybe what it does is figure out the lat long by calculating last reported position + bearing * speed
-perhaps the destination lat longs can be set by a zip code
-
-
 api 
 create object 
 
 
 
-Ok so we can have waypoints that belong to an aircraft. and what it will do is calculate distance to waypoint 2 and if time is greater
+Ok so we can have waypoints that belong to an aircraft. and what it will do is calculate distance to waypoint 2 and if it has exceded the distance
+between those way points, it will calculate the next one and the next one until it gets the right segment then calculates the bearing. if greater than the distance between first and last waypoint then the bearing between the last two way points is the bearing it continues along
 
 todo
-Create the endpoint to add 1 or more aircraft
-Use that to create aircraft for testing then verify the aircraft exist ( but how to do it so it doesn't touch aircraft file or how to restore original aircraft file afterwards)
+test to create aircraft for testing then verify the aircraft exist ( but how to do it so it doesn't touch aircraft file or how to restore original aircraft file afterwards). 
 
 to have a formation of two fighters
-you can have a flag to put a ghost one on there that stays at 235 or 135 from the bearing 300 meters or 400 meters distancek
+you can have a flag to put a ghost one on there that stays at 235 or 135 from the bearing 300 meters or 400 meters distancek. 
+
+how to do race track with major minor
+how to do circular orbits
+
+maybe orbit type is path, racetrack, orbit
+
+Added US cities.csv
+waypoint: lat,long
+waypoint: zipcode
+waypoint: City,ST
+

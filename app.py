@@ -8,21 +8,15 @@ import json
 
 app = Flask(__name__)
 
-# Test method to make sure calculation works - Delete
-@app.route('/', methods=['GET'])
-def test():
-	# lat = request.args.get('lat')
-	# print(lat)
-	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
-	return jsonify({'longitude': new_long, 'latitude': new_lat })
-
-# Starts a specific aircraft's flight passed by name in url 
-# Sets the start time to current time in epoch and writes it back to the pickle
+# Sets the start time for a specific aircraft to current time in epoch and writes it back to the file
 @app.route('/start', methods=['POST'])
 def start_flying():
 	start_time = ""
+
 	# identify the aircraft name from keys passed
 	aircraft_name 	= request.args.get('aircraft_name')
+
+	# Convert existing aircraft to python object
 	vessels_dict = convert_aircraft_to_python_object()
 
 	# find the vessel name we are starting, set current time (time since epoch)
@@ -31,45 +25,55 @@ def start_flying():
 			start_time = time.time()
 			vessel["start_time"] = start_time
 
+	# Write the updated aircraft data back to file and return the name and start time as json object
 	write_aircraft(vessels_dict)
 	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
 
+# Takes a json file with 1 or more aircraft, pulls the existing planes, appends the new planes to it and saves it. 
 @app.route('/CreateAircraft', methods=['POST'])
 def create_aircraft():
-	# parse arguments
-	# load pickle and update object before storing pickle
+	# Load pickle data of existing aircraft and convert to python dict/object
 	all_aircraft = convert_aircraft_to_python_object()
+
+	# parse the json file passed in
 	new_aircraft = request.get_json()
+
+	# Iterate through the new aircraft and append them to the existing aircraft
 	for aircraft in new_aircraft:
 		all_aircraft.append(aircraft)
+
+	# write all aircraft back to database/bytes file
 	write_aircraft(all_aircraft)
+
+	# Convert the aircraft into json and return it along with 201 status as JSON
 	json_all_aircraft = json.dumps(all_aircraft)
 	return Response(json_all_aircraft, status=201, mimetype='application/json')
-
-# test_aircraft = { "name": "buttercup", "aircraft_type": "KC-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
-#  {"latitude": 32.744512, "longitude": -96.969403},
-#  {"latitude": 33.108040, "longitude": -96.607846}
-# ]}
 
 # Returns all aircraft positions in json object. 
 @app.route('/AllAircraftPositions', methods=["GET"])
 def get_all_positions():
+	# Set Initial variable data to base value
 	distance_traveled = 0
 	current_bearing = ""
 	aircraft_results = []
+
+	# Convert existing aircraft data to json object
 	all_aircraft = convert_aircraft_to_python_object()
+
+	# Iterate through 
 	for aircraft in all_aircraft:
 		# current time minus start time * 0.514444 (knots to meters per second) times the speed of the aircraft
 		# 	= distance traveled converted to integer
-		distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
-		# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
-		start_point = aircraft["waypoints"][0]
-		end_point = aircraft["waypoints"][1]
-		current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
-			end_point["latitude"], end_point["longitude"])
-		new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled / 1000,current_bearing)
-		result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
-		aircraft_results.append(result)
+		if aircraft["start_time"] != None:	
+			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
+			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
+			start_point = aircraft["waypoints"][0]
+			end_point = aircraft["waypoints"][1]
+			current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
+				end_point["latitude"], end_point["longitude"])
+			new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled / 1000,current_bearing)
+			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
+			aircraft_results.append(result)
 	return jsonify(aircraft_results)
 
 # returns calculation of new position with explicitly passed in paramters
@@ -132,3 +136,12 @@ if __name__ == '__main__':
 # 	names_list = names.split(",")
 # 	for name in names_list:
 # 		distance = calculate_distance(name)
+
+
+# # Test method to make sure calculation works - Delete
+# @app.route('/', methods=['GET'])
+# def test():
+# 	# lat = request.args.get('lat')
+# 	# print(lat)
+# 	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
+# 	return jsonify({'longitude': new_long, 'latitude': new_lat })
