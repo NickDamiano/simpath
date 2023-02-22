@@ -66,6 +66,7 @@ def get_all_positions():
 		# 	= distance traveled converted to integer
 		if aircraft["start_time"] != None:	
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
+
 			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
 			start_point = aircraft["waypoints"][0]
 			end_point = aircraft["waypoints"][1]
@@ -87,6 +88,7 @@ def set_aircraft_data():
 	new_lat, new_long = position.calculate(latitude,longitude,distance,bearing)
 	return jsonify({'latitude': new_lat, 'longitude': new_long })
 
+# Returns all aircraft json object which contains data about the aircraft but not present position
 @app.route('/getallaircraft', methods=['GET'])
 def print_all_aircraft():
 	# open the file to read, load the file to be a python object
@@ -112,11 +114,12 @@ def convert_aircraft_to_python_object():
 	else:
 		return []
 
+# Writes aircraft python object passed in to python pickle file aircraft
 def write_aircraft(aircraft_to_write):
 	w_file = open('aircraft', 'wb')
 	pickle.dump(aircraft_to_write, w_file)
 
-# loads all pickle data
+# loads all pickle data from aircraft file into python object
 def loadall(file_name):
 	with open(file_name, "rb") as r_file:
 		while True:
@@ -145,3 +148,6 @@ if __name__ == '__main__':
 # 	# print(lat)
 # 	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
 # 	return jsonify({'longitude': new_long, 'latitude': new_lat })
+
+
+# Next - write a single api call test, then write them all, 
