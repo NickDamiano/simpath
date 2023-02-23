@@ -16,7 +16,7 @@ def setup():
 	return all_aircraft
 
 
-
+# tests creation of 1 aircraft
 def test_create_aircraft(client):
 	rv = client.post('/CreateAircraft', json=[
 	{
@@ -37,6 +37,7 @@ def test_create_aircraft(client):
 	assert test_aircraft["cruising_speed"] == 450
 	assert test_aircraft["start_time"] == None
 
+# tests starting a single aircraft
 def test_start_by_name(client):
 	rv = client.post('/start', json={
 		"aircraft_names": ["clipclop"]
@@ -44,8 +45,8 @@ def test_start_by_name(client):
 	json_data = rv.get_json()
 	assert json_data["start_time"] != ""
 
+# tests getting all aircraft positions
 def test_all_aircraft_positions(client):
-	rv2 = client.get("/GetAllAircraft")
 	rv = client.get('/AllAircraftPositions')
 	all_aircraft = rv.get_json()
 	assert len(all_aircraft) == 1
