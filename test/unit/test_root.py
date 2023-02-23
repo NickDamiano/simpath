@@ -37,6 +37,7 @@ def test_create_aircraft(client):
 	assert test_aircraft["cruising_speed"] == 450
 	assert test_aircraft["start_time"] == None
 
+# Test creation of multiple aircraft and 
 def test_create_multiple_aircraft(client):
 	test_aircraft = [
 	{ "name": "Hog 71", "aircraft_type": "A-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
@@ -58,6 +59,11 @@ def test_create_multiple_aircraft(client):
 	]
 	rv = client.post('/CreateAircraft', json=test_aircraft)
 	assert rv.status_code == 201
+	json_data = rv.get_json()
+	assert len(json_data) == 5
+
+# test getting all aircraft data
+def test_get_all_aircraft(client):
 	all_aircraft = client.get('/GetAllAircraft')
 	json_data = all_aircraft.get_json()
 	assert len(json_data) == 5
