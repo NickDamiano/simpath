@@ -66,7 +66,11 @@ def get_all_positions():
 		# 	= distance traveled converted to integer
 		if aircraft["start_time"] != None:	
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
-			# 
+			# distance += distance between next waypoint and following waypoint.
+			# if the distance traveled is < than the next waypoint, calculate bearing and pass start point
+			# otherwise look at next waypoint if there is one, if there's not than use the old bearing.
+			# start point end point can be coordinates separated by comma, or city state"
+
 
 			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
 			start_point = aircraft["waypoints"][0]
@@ -90,7 +94,7 @@ def set_aircraft_data():
 	return jsonify({'latitude': new_lat, 'longitude': new_long })
 
 # Returns all aircraft json object which contains data about the aircraft but not present position
-@app.route('/getallaircraft', methods=['GET'])
+@app.route('/GetAllAircraft', methods=['GET'])
 def print_all_aircraft():
 	# open the file to read, load the file to be a python object
 	file = open('aircraft', 'rb')
@@ -151,4 +155,4 @@ if __name__ == '__main__':
 # 	return jsonify({'longitude': new_long, 'latitude': new_lat })
 
 
-# Next - write a single api call test, then write them all, 
+# next either write more tests or work making it work for as many waypoints as user wants.

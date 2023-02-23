@@ -7,10 +7,12 @@ import app
 # 	assert landing.status_code == 200
 aircraft_backup = ""
 
-# captures original pickle file
+# captures original pickle file, clear the file for the tests so that 
+# actual contents don't interfere with tests and tests are consistent
 def setup():
 	print("Starting Setup - backing up Aircraft file")
 	all_aircraft = app.convert_aircraft_to_python_object()
+	app.write_aircraft([])
 	return all_aircraft
 
 
@@ -41,6 +43,12 @@ def test_start_by_name(client):
 	})
 	json_data = rv.get_json()
 	assert json_data["start_time"] != ""
+
+def test_all_aircraft_positions(client):
+	rv2 = client.get("/GetAllAircraft")
+	rv = client.get('/AllAircraftPositions')
+	all_aircraft = rv.get_json()
+	assert len(all_aircraft) == 1
 
 #restore pickle aircraft file
 def restore():
