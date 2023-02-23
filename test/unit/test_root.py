@@ -37,6 +37,32 @@ def test_create_aircraft(client):
 	assert test_aircraft["cruising_speed"] == 450
 	assert test_aircraft["start_time"] == None
 
+def test_create_multiple_aircraft(client):
+	test_aircraft = [
+	{ "name": "Hog 71", "aircraft_type": "A-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
+	{"latitude": 32.744512, "longitude": -96.969403},
+	{"latitude": 33.108040, "longitude": -96.607846}
+	]},
+	{ "name": "Hog 72", "aircraft_type": "A-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
+	{"latitude": 32.744512, "longitude": -96.969403},
+	{"latitude": 33.108040, "longitude": -96.607846}
+	]},
+	{ "name": "Slasher 93", "aircraft_type": "AC-130", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
+	{"latitude": 32.744512, "longitude": -96.969403},
+	{"latitude": 33.108040, "longitude": -96.607846}
+	]},
+	{ "name": "Bone 19", "aircraft_type": "B-1", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
+	{"latitude": 32.744512, "longitude": -96.969403},
+	{"latitude": 33.108040, "longitude": -96.607846}
+	]}
+	]
+	rv = client.post('/CreateAircraft', json=test_aircraft)
+	assert rv.status_code == 201
+	all_aircraft = client.get('/GetAllAircraft')
+	json_data = all_aircraft.get_json()
+	assert len(json_data) == 5
+
+
 # tests starting a single aircraft
 def test_start_by_name(client):
 	rv = client.post('/start', json={
