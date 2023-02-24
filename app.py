@@ -4,7 +4,8 @@ import pdb
 import pickle
 import time
 import json
-
+import pandas as pd
+import numpy as np 
 
 app = Flask(__name__)
 
@@ -62,14 +63,19 @@ def get_all_positions():
 
 	# Iterate through 
 	for aircraft in all_aircraft:
+		waypoints = all_aircraft[0]["waypoints"]
+
+
 		# current time minus start time * 0.514444 (knots to meters per second) times the speed of the aircraft
 		# 	= distance traveled converted to integer
 		if aircraft["start_time"] != None:	
+			# Calculate distance traveled
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
-			# distance += distance between next waypoint and following waypoint.
-			# if the distance traveled is < than the next waypoint, calculate bearing and pass start point
-			# otherwise look at next waypoint if there is one, if there's not than use the old bearing.
-			# start point end point can be coordinates separated by comma, or city state"
+
+			# pass the waypoints and distance to helper function, which figures out the start point
+			# 	and returns the bearing of travel, point to measure from, and distance from that point
+
+			
 
 
 			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
@@ -104,6 +110,23 @@ def print_all_aircraft():
 	return jsonify(vessels)
 
 ########################################## helper methods ##########################################
+
+# Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
+# then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
+def calculate_segment_start_and_bearing(waypoints, distance):
+	# rebuild the array with latlong only (convert city state)
+	# first import uscities.csv in chunks
+	print('test')
+
+	# determine waypoint type, city state or latlong
+
+	# set lat long variables
+	# 
+
+def convert_city_to_coords(waypoints):
+	chunk = pd.read_csv('uscities.csv', chunksize=1000)
+	df = pd.concat(chunk)
+	pdb.set_trace()
 
 # Retrieves the aircraft from the pickle and creates a generator which is then
 # converted to a python dict and returned the first index. somehow it's a list within a list
