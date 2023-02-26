@@ -76,6 +76,12 @@ def test_incorrect_convert_city_to_coords():
 	converted_coords = app.convert_city_to_coords(["Lasertown,TX"])
 	assert converted_coords == False
 
+# should return the same coordinated passed in
+def test_correct_coords_city_to_coords():
+	test_coords = "33.1234,-98.1234"
+	converted_coords = app.convert_city_to_coords([test_coords])
+	assert converted_coords[0] == test_coords
+
 
 # tests starting a single aircraft
 def test_start_by_name(client):

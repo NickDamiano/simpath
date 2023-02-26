@@ -115,8 +115,7 @@ def print_all_aircraft():
 # then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
 def calculate_segment_start_and_bearing(waypoints, distance):
 	# rebuild the array with latlong only (convert city state)
-	# first import uscities.csv in chunks
-	print('test')
+	converted_waypoints = convert_city_to_coords(waypoints)
 
 	# determine waypoint type, city state or latlong
 
