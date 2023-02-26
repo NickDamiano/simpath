@@ -10,7 +10,7 @@ df = df.reset_index()  # make sure indexes pair with number of rows
 all_cities = {}
 # get us city state and set entry in dict
 for index, row in df.iterrows():
-    city	=  row["city"].lower()
+    city	=  row["city"].lower().strip()
     state 	= row["state_id"].lower()
     city_state = city + state
     lat 	= row["lat"]

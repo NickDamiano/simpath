@@ -68,9 +68,13 @@ def test_get_all_aircraft(client):
 	json_data = all_aircraft.get_json()
 	assert len(json_data) == 5
 
-def test_convert_city_to_coords():
+def test_correct_convert_city_to_coords():
 	converted_coords = app.convert_city_to_coords(["Austin,TX"])
-	assert converted_coords == "30.3005,-97.7522"
+	assert converted_coords[0] == "30.3005,-97.7522"
+
+def test_incorrect_convert_city_to_coords():
+	converted_coords = app.convert_city_to_coords(["Lasertown,TX"])
+	assert converted_coords == False
 
 
 # tests starting a single aircraft

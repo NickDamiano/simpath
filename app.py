@@ -123,10 +123,29 @@ def calculate_segment_start_and_bearing(waypoints, distance):
 	# set lat long variables
 	# 
 
+# Takes a list of waypoints either in lat long separated by comma or
+# city, state (Dallas,TX)
 def convert_city_to_coords(waypoints):
-	chunk = pd.read_csv('uscities.csv', chunksize=1000)
-	df = pd.concat(chunk)
-	pdb.set_trace()
+	waypoint_results = []
+	result = ""
+
+	with open('uscities', 'rb') as f:
+		cities = pickle.load(f)
+	for waypoint in waypoints:
+		# check if first character in waypoint is numeric in which case we treat it as a coord
+		if waypoint[0].isnumeric():
+			waypoint_results.append(waypoint)
+			# skip the remainder of the loop since we know this is a coord
+			continue
+		else:
+			# strip white space and make it lower to match the keys
+			waypoint = waypoint.strip().lower().split(",")
+			waypoint = ''.join(waypoint)
+		if waypoint in cities.keys():
+			waypoint_results.append(cities[waypoint])
+		else:
+			return False
+	return waypoint_results
 
 # Retrieves the aircraft from the pickle and creates a generator which is then
 # converted to a python dict and returned the first index. somehow it's a list within a list
