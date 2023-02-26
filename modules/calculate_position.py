@@ -25,31 +25,11 @@ def calculate_bearing(lat1, long1, lat2, long2):
   return fwd_azimuth
 
 
-
-
-
-
-
-# def 
-# R = 6378.1  #Radius of the Earth
-# brng = 1.57  #Bearing is 90 degrees converted to radians.
-# d = 1500  #Distance in km
-
-# lat1 = math.radians(36.959530)  #Current lat point converted to radians
-# lon1 = math.radians(-120.062866)  #Current long point converted to radians
-
-# lat2 = math.asin(
-#   math.sin(lat1) * math.cos(d / R) +
-#   math.cos(lat1) * math.sin(d / R) * math.cos(brng))
-
-# lon2 = lon1 + math.atan2(
-#   math.sin(brng) * math.sin(d / R) * math.cos(lat1),
-#   math.cos(d / R) - math.sin(lat1) * math.sin(lat2))
-
-# lat2 = math.degrees(lat2)
-# lon2 = math.degrees(lon2)
-
-# print(lat2)
-# print(lon2)
-
-
+def calculate_distance(lat1, long1, lat2, long2):
+  # starthere
+  # return distance
+  # google if geopy calculates distance between two points
+  start = (lat1,long1)
+  end   = (lat2,long2)
+  distance = geodesic(start,end).miles
+  return distance

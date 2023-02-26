@@ -116,6 +116,17 @@ def print_all_aircraft():
 def calculate_segment_start_and_bearing(waypoints, distance):
 	# rebuild the array with latlong only (convert city state)
 	converted_waypoints = convert_city_to_coords(waypoints)
+	total_distance_calculated = 0 
+	# for waypoint in converted_waypoints:
+	# 	segment_distance = position.calculate_distance(waypoint)
+
+
+
+	
+	# set total_distance_calculated to zero
+	# iterate over waypoints starting with index 1
+	# get distance between last and current way point
+	# 
 
 	# determine waypoint type, city state or latlong
 
@@ -176,24 +187,3 @@ def loadall(file_name):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
-
-# method i started writing to calculate specific positions
-# takes url params list of aircraft names
-# @app.route('/get_aircraft_position', methods=["GET"])
-# def get_positions():
-# 	names = request.args.get("names")
-# 	names_list = names.split(",")
-# 	for name in names_list:
-# 		distance = calculate_distance(name)
-
-
-# # Test method to make sure calculation works - Delete
-# @app.route('/', methods=['GET'])
-# def test():
-# 	# lat = request.args.get('lat')
-# 	# print(lat)
-# 	new_long, new_lat = position.calculate(35.79225921965943,-103.36822768355603,500,45)
-# 	return jsonify({'longitude': new_long, 'latitude': new_lat })
-
-
-# next either write more tests or work making it work for as many waypoints as user wants.

@@ -1,6 +1,7 @@
 from test.unit import client
 import pdb
 import app
+from modules import calculate_position
 
 # def test_landing(client):
 # 	landing = client.get("/")
@@ -14,7 +15,6 @@ def setup():
 	all_aircraft = app.convert_aircraft_to_python_object()
 	app.write_aircraft([])
 	return all_aircraft
-
 
 # tests creation of 1 aircraft
 def test_create_aircraft(client):
@@ -82,7 +82,6 @@ def test_correct_coords_city_to_coords():
 	converted_coords = app.convert_city_to_coords([test_coords])
 	assert converted_coords[0] == test_coords
 
-
 # tests starting a single aircraft
 def test_start_by_name(client):
 	rv = client.post('/start', json={
@@ -97,7 +96,21 @@ def test_all_aircraft_positions(client):
 	all_aircraft = rv.get_json()
 	assert len(all_aircraft) == 1
 
+def tests_calculate_distance():
+	start_lat 	= 38.1234
+	start_long 	= -98.1234
+	end_lat 	= 39.1234
+	end_long 	= -99.1234
+	distance = calculate_position.calculate_distance(start_lat,start_long,end_lat,end_long)
+	distance_rounded = round(distance, 2)
+	assert distance_rounded == 87.67
+
 #restore pickle aircraft file
 def restore():
 	print("Starting Teardown - restoring original Aircraft file")
 	app.write_aircraft(aircraft_backup)
+
+# add test for calculate position methods
+# calculate which gets projected point
+# calculate bearing
+# calculate_distance
