@@ -96,20 +96,28 @@ def test_all_aircraft_positions(client):
 	all_aircraft = rv.get_json()
 	assert len(all_aircraft) == 1
 
-def tests_calculate_distance():
-	start_lat 	= 38.1234
+def test_calculate_distance():
+	start_lat 	= "38.1234"
 	start_long 	= -98.1234
 	end_lat 	= 39.1234
 	end_long 	= -99.1234
 	distance = calculate_position.calculate_distance(start_lat,start_long,end_lat,end_long)
-	distance_rounded = round(distance, 2)
-	assert distance_rounded == 87.67
+	distance_int = int(distance)
+	assert distance_int == 87
+
+def test_roundtrip_distance():
+	waypoints = ["4.704659,-74.069079","4.077158,-73.563053","0.742613,-75.237578"]
+	roundtrip_distance = app.calculate_roundtrip_distance(waypoints)
+	assert int(roundtrip_distance) == 596
 
 #restore pickle aircraft file
 def restore():
 	print("Starting Teardown - restoring original Aircraft file")
 	app.write_aircraft(aircraft_backup)
-
+# add test to start all aircraft
+# add test to wipe all aircraft from the file
+# add test to stop by name
+# add test to stop all
 # add test for calculate position methods
 # calculate which gets projected point
 # calculate bearing

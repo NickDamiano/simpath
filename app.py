@@ -111,18 +111,71 @@ def print_all_aircraft():
 
 ########################################## helper methods ##########################################
 
+# calculates the distance from 1st,2nd,3rd...last,1st. after last - aircraft
+# 	will return to start and continue the track. so it figures out that full 
+# 	loop distance in miles and returns it.
+def calculate_roundtrip_distance(waypoints):
+	print("round trip distance goes here")
+	total_distance = 0
+	# for waypoint in waypoints:
+	# We measure from index to index+1 so we want to stop before out of index error
+	# this measures the segment distance
+	for index, waypoint in enumerate(waypoints):
+		if index != len(waypoints) -1:
+			split_start = waypoint.split(",")
+			split_end = waypoints[index+1].split(",")
+			lat1 = split_start[0]
+			lon1 = split_start[1]
+			lat2 = split_end[0]
+			lon2 = split_end[1]
+			segment_distance = position.calculate_distance(lat1,lon1,lat2,lon2)
+			total_distance += segment_distance
+	# Finally add the segment from end to start since we're looping these tracks
+	split_start = waypoints[-1].split(",")
+	split_end = waypoints[0].split(",")
+	lat1 = split_start[0]
+	lon1 = split_start[1]
+	lat2 = split_end[0]
+	lon2 = split_end[1]
+	total_distance += position.calculate_distance(lat1,lon1,lat2,lon2)
+	return total_distance
+
+
 # Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
 # then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
 def calculate_segment_start_and_bearing(waypoints, distance):
 	# rebuild the array with latlong only (convert city state)
 	converted_waypoints = convert_city_to_coords(waypoints)
 	total_distance_calculated = 0 
-	# for waypoint in converted_waypoints:
-	# 	segment_distance = position.calculate_distance(waypoint)
+	for waypoint in converted_waypoints:
+		segment_distance = position.calculate_distance(waypoint)
+		total_distance_calculated += segment_distance
+		# if the distance traveled is beyond the current measured distance
+		#	it means either we've hit the last waypoint and it's continuing to fly
+		#	or it's on a further segment
+
+		# if distance > total_distance_calculated and 
+
+		# idea - calculate total time it will take to travel through all waypoints
+		#	back to the first waypoint and use that to reset the time at that epoch to do orbits
+		# or if single waypoint is passed in, when it creates the plane in the database
+		# it generates 50 points around it or some number divisible by 4. Then sets the orbit flag to true
+		# and 
+
+		# ok so we figure out the total distance for a single loop
+		# if the distance traveled exceeds that, we subtract the loop
+		# total distance until we get a negative nummber and that's the
+		# distance based off a single orbit. 
+		# so 33 miles on a 10 mile track means 3 miles into the track
+		# we then do the normal calculation to see which segment and bearing
+		# to next point
 
 
 
-	
+
+
+
+
 	# set total_distance_calculated to zero
 	# iterate over waypoints starting with index 1
 	# get distance between last and current way point
@@ -132,6 +185,12 @@ def calculate_segment_start_and_bearing(waypoints, distance):
 
 	# set lat long variables
 	# 
+
+# takes center point and orbit size and returns a set of points 
+# 	excluding the center point that is the circular type track around 
+# 	the center point and when it gets to the end it starts over
+# def generate_orbit(waypoint, size):
+
 
 # Takes a list of waypoints either in lat long separated by comma or
 # city, state (Dallas,TX)
