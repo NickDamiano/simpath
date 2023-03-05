@@ -119,11 +119,10 @@ def test_calculate_bearing():
 	end_lat 	= 39.1234
 	end_long 	= -99.1234
 	bearing = calculate_position.calculate_bearing(start_lat, start_long, end_lat, end_long)
-	# todo next test the bearing between these points, check for all 4 quadrants
 	assert int(bearing) == 322
 
-	
-
+	bearing = calculate_position.calculate_bearing(end_lat, end_long,start_lat, start_long)
+	assert int(bearing) == 141
 
 def test_calculate_distance():
 	start_lat 	= "38.1234"
