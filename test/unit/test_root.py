@@ -113,6 +113,15 @@ def test_calculate_segment_start_and_bearing():
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 2
 
+def test_calculate_bearing():
+	start_lat 	= "38.1234"
+	start_long 	= -98.1234
+	end_lat 	= 39.1234
+	end_long 	= -99.1234
+	bearing = calculate_position.calculate_bearing(start_lat, start_long, end_lat, end_long)
+	# todo next test the bearing between these points, check for all 4 quadrants
+	assert int(bearing) == 322
+
 	
 
 

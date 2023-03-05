@@ -23,6 +23,9 @@ def calculate(lat1, lon1, distance, bearing):
 def calculate_bearing(lat1, long1, lat2, long2):
   geodesic = pyproj.Geod(ellps='WGS84')
   fwd_azimuth,back_azimuth,distance = geodesic.inv(long1, lat1, long2, lat2)
+  # for some reason if it's greater than 180 it returns a negative number 
+  if fwd_azimuth < 0:
+    fwd_azimuth = 360 - abs(fwd_azimuth)
   return fwd_azimuth
 
 
