@@ -63,27 +63,26 @@ def get_all_positions():
 
 	# Iterate through 
 	for aircraft in all_aircraft:
-		waypoints = all_aircraft[0]["waypoints"]
-
-
+		waypoints = aircraft["waypoints"]
 		# current time minus start time * 0.514444 (knots to meters per second) times the speed of the aircraft
 		# 	= distance traveled converted to integer
 		if aircraft["start_time"] != None:	
 			# Calculate distance traveled
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
-
 			# pass the waypoints and distance to helper function, which figures out the start point
 			# 	and returns the bearing of travel, point to measure from, and distance from that point
+			start_index, current_bearing = calculate_segment_start_and_bearing(waypoints, distance_traveled)
+			start_point = waypoints[start_index]
+			start_lat 	= start_point.split(",")[0]
+			start_long	= start_point.split(",")[1]
 
-			
-
-
-			# current bearing is coordinates[0],coordinates[1] passed to calculate bearing
-			start_point = aircraft["waypoints"][0]
-			end_point = aircraft["waypoints"][1]
-			current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
-				end_point["latitude"], end_point["longitude"])
-			new_long, new_lat = position.calculate(start_point["latitude"], start_point["longitude"],distance_traveled / 1000,current_bearing)
+			# # current bearing is coordinates[0],coordinates[1] passed to calculate bearing
+			# start_point = aircraft["waypoints"][0]
+			# end_point = aircraft["waypoints"][1]
+			# current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
+			# 	end_point["latitude"], end_point["longitude"])
+			new_long, new_lat = position.calculate(start_lat, start_long, 
+				distance_traveled / 1000,current_bearing)
 			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
 			aircraft_results.append(result)
 	return jsonify(aircraft_results)
@@ -144,6 +143,7 @@ def calculate_roundtrip_distance(waypoints):
 # Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
 # then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
 def calculate_segment_start_and_bearing(waypoints, distance_so_far):
+	start_lat = start_long = end_lat = end_long = 0
 	# rebuild the array with latlong only (convert city state)
 	# converted waypoints are array of strings of latlong separated by comma "33.1234,-98.1234"
 	converted_waypoints = convert_city_to_coords(waypoints)

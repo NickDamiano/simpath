@@ -25,7 +25,7 @@ def test_create_aircraft(client):
 		"aircraft_type": "F-18",
 		"cruising_speed": 450,
 		"start_time": None,
-		"waypoints": [{"latitude": 33.128416, "longitude": -117.280023},{"latitude": 34.918010, "longitude": -117.891509}]
+		"waypoints": ["33.128416,-117.280023","34.918010,-117.891509"]
 	}
 	])
 	json_data = rv.get_json()
@@ -41,20 +41,16 @@ def test_create_aircraft(client):
 def test_create_multiple_aircraft(client):
 	test_aircraft = [
 	{ "name": "Hog 71", "aircraft_type": "A-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
-	{"latitude": 32.744512, "longitude": -96.969403},
-	{"latitude": 33.108040, "longitude": -96.607846}
+	 "32.744512,-96.969403", "33.108040,-96.607846"
 	]},
 	{ "name": "Hog 72", "aircraft_type": "A-10", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
-	{"latitude": 32.744512, "longitude": -96.969403},
-	{"latitude": 33.108040, "longitude": -96.607846}
+	 "32.744512,-96.969403","33.108040,-96.607846"
 	]},
 	{ "name": "Slasher 93", "aircraft_type": "AC-130", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
-	{"latitude": 32.744512, "longitude": -96.969403},
-	{"latitude": 33.108040, "longitude": -96.607846}
+	"32.744512,-96.969403","33.108040,-96.607846"
 	]},
 	{ "name": "Bone 19", "aircraft_type": "B-1", "altitude": 1000, "cruising_speed": 565, "start_time": None, "waypoints": [
-	{"latitude": 32.744512, "longitude": -96.969403},
-	{"latitude": 33.108040, "longitude": -96.607846}
+	"32.744512,-96.969403","33.108040,-96.607846"
 	]}
 	]
 	rv = client.post('/CreateAircraft', json=test_aircraft)
