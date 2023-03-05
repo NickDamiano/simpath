@@ -96,6 +96,26 @@ def test_all_aircraft_positions(client):
 	all_aircraft = rv.get_json()
 	assert len(all_aircraft) == 1
 
+def test_calculate_segment_start_and_bearing():
+	# test for distance between second and third waypiont
+	# waypoints, RGAAF, Lampasas, Lake buchanan back to hood, roughly 81 miles
+	waypoints = ["31.064421,-97.829107","31.064094,-98.181702","30.826594,-98.418648"]
+
+	distance_traveled = 5
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 0
+
+	distance_traveled = 30
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 1
+
+	distance_traveled = 70
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 2
+
+	
+
+
 def test_calculate_distance():
 	start_lat 	= "38.1234"
 	start_long 	= -98.1234

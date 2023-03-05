@@ -28,4 +28,13 @@ implement waypoints, measuring distance to first if calculated distanced flown i
 for orbit, calculate 100 waypoints around the point, modulos to figure out where between it should fall, when it gets to last point go to first point and when it hits first point maybe it resets the time? i don't know there's a way to do this though and i'm close
 
 story to tell - solving the orbit problem - afghanistan FMS experience, figuring out distance traveled on new loop, 
+wrote a method to loop subtracting distance from total distance to distance so far realized after oh just write it with a modulo in one line
+
+You could have an endpoint action. it could be loop, continue, stop, 
+
+if loop
+fly back to first point
+if stop 
+if continue
+
 

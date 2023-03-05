@@ -111,6 +111,7 @@ def print_all_aircraft():
 
 ########################################## helper methods ##########################################
 
+
 # calculates the distance from 1st,2nd,3rd...last,1st. after last - aircraft
 # 	will return to start and continue the track. so it figures out that full 
 # 	loop distance in miles and returns it.
@@ -140,16 +141,75 @@ def calculate_roundtrip_distance(waypoints):
 	total_distance += position.calculate_distance(lat1,lon1,lat2,lon2)
 	return total_distance
 
-
 # Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
 # then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
-def calculate_segment_start_and_bearing(waypoints, distance):
+def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 	# rebuild the array with latlong only (convert city state)
+	# converted waypoints are array of strings of latlong separated by comma "33.1234,-98.1234"
 	converted_waypoints = convert_city_to_coords(waypoints)
-	total_distance_calculated = 0 
-	for waypoint in converted_waypoints:
-		segment_distance = position.calculate_distance(waypoint)
+
+	# calculate roundtrip total distance loop
+	roundtrip_distance = calculate_roundtrip_distance(converted_waypoints)
+
+	# calculate relative distance in loop (100 mile loop, 103 miles traveled, 3 miles relative)
+	relative_distance_so_far = distance_so_far % roundtrip_distance
+
+	# calculate which of the waypoints is the start point (to use to see where along the segment
+	# the orbit/track the aircraft is)
+	total_distance_calculated 	= 0 
+	# index of segment we're checking from
+	segment_start 		= 0
+	while(total_distance_calculated < relative_distance_so_far):
+
+		# if we have reached the end of the waypoints and have still not measured up to the
+		# 	round trip distance that means we're on the final leg from end to start
+		#	So we break out of the loop after setting the index of the segment start
+		#	to the last point in the waypoints (meaning traveling from end to start point)
+		if segment_start == len(converted_waypoints)-1:
+			# if there are 3 waypoints then the index is 3 -1 = 2 since 0 index
+			break
+		segment_end = segment_start + 1
+		start_lat 		= converted_waypoints[segment_start].split(",")[0]
+		start_long 		= converted_waypoints[segment_start].split(",")[1]
+		end_lat			= converted_waypoints[segment_end].split(",")[0]
+		end_long 		= converted_waypoints[segment_end].split(",")[1]		
+
+		segment_distance = position.calculate_distance(start_lat,start_long,end_lat,end_long)
 		total_distance_calculated += segment_distance
+
+		# 	If total distance calculated is 
+		#	greater than relative travel meaning we've measured a to b and b to c and
+		#	distance of those segments is 200 miles and relative distance so far is
+		# 	180 miles. Otherwise we increment the index for next loop
+		if(total_distance_calculated < relative_distance_so_far):
+			segment_start += 1
+
+	# calculate bearing - if the segment start is the last index then figure out the waypoints
+	#	for last and first
+	if(segment_start) == len(converted_waypoints)-1:
+		start_lat 		= converted_waypoints[-1].split(",")[0]
+		start_long 		= converted_waypoints[-1].split(",")[1]
+		end_lat			= converted_waypoints[0].split(",")[0]
+		end_long 		= converted_waypoints[0].split(",")[1]	
+	# otherwise the last calculated points in the while block above are still valid
+	segment_bearing = position.calculate_bearing(start_lat, start_long, end_lat, end_long) 
+
+
+	# return waypoint index of segment start and bearing
+	return segment_start, segment_bearing
+
+
+		
+
+
+
+
+
+
+
+
+
+	
 		# if the distance traveled is beyond the current measured distance
 		#	it means either we've hit the last waypoint and it's continuing to fly
 		#	or it's on a further segment
@@ -170,26 +230,20 @@ def calculate_segment_start_and_bearing(waypoints, distance):
 		# we then do the normal calculation to see which segment and bearing
 		# to next point
 
+		# set total_distance_calculated to zero
+		# iterate over waypoints starting with index 1
+		# get distance between last and current way point
+		# 
 
+		# determine waypoint type, city state or latlong
 
+		# set lat long variables
+		# 
 
-
-
-
-	# set total_distance_calculated to zero
-	# iterate over waypoints starting with index 1
-	# get distance between last and current way point
-	# 
-
-	# determine waypoint type, city state or latlong
-
-	# set lat long variables
-	# 
-
-# takes center point and orbit size and returns a set of points 
-# 	excluding the center point that is the circular type track around 
-# 	the center point and when it gets to the end it starts over
-# def generate_orbit(waypoint, size):
+		# takes center point and orbit size and returns a set of points 
+		# 	excluding the center point that is the circular type track around 
+		# 	the center point and when it gets to the end it starts over
+		# def generate_orbit(waypoint, size):
 
 
 # Takes a list of waypoints either in lat long separated by comma or
