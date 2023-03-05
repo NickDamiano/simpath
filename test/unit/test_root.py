@@ -10,11 +10,10 @@ aircraft_backup = ""
 
 # captures original pickle file, clear the file for the tests so that 
 # actual contents don't interfere with tests and tests are consistent
-def setup():
+def test_setup():
 	print("Starting Setup - backing up Aircraft file")
 	all_aircraft = app.convert_aircraft_to_python_object()
 	app.write_aircraft([])
-	return all_aircraft
 
 # tests creation of 1 aircraft
 def test_create_aircraft(client):
@@ -135,14 +134,14 @@ def test_roundtrip_distance():
 	assert int(roundtrip_distance) == 596
 
 #restore pickle aircraft file
-def restore():
+def test_restore():
 	print("Starting Teardown - restoring original Aircraft file")
 	app.write_aircraft(aircraft_backup)
+
 # add test to start all aircraft
 # add test to wipe all aircraft from the file
 # add test to stop by name
 # add test to stop all
 # add test for calculate position methods
 # calculate which gets projected point
-# calculate bearing
 # calculate_distance
