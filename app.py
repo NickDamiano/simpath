@@ -35,6 +35,9 @@ def start_flying():
 def create_aircraft():
 	# Load pickle data of existing aircraft and convert to python dict/object
 	all_aircraft = convert_aircraft_to_python_object()
+	# if the file was empty, pass an empty array
+	if not all_aircraft:
+		all_aircraft = []
 
 	# parse the json file passed in
 	new_aircraft = request.get_json()
@@ -300,3 +303,8 @@ def loadall(file_name):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
+
+
+# todo - something is wrong with the all locations it jumps between two sets of 
+# 	coordinates essentially and moves along with them
+# tests are failing and coordinates are all over the fuckign place

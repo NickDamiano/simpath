@@ -12,8 +12,11 @@ aircraft_backup = ""
 # actual contents don't interfere with tests and tests are consistent
 def test_setup():
 	print("Starting Setup - backing up Aircraft file")
-	all_aircraft = app.convert_aircraft_to_python_object()
-	app.write_aircraft([])
+	aircraft_backup = app.convert_aircraft_to_python_object()
+	# erase test file
+	f = open("aircraft_test", "w")
+	f.close()
+
 
 # tests creation of 1 aircraft
 def test_create_aircraft(client):
