@@ -3,20 +3,14 @@ import pdb
 import app
 from modules import calculate_position
 
-# def test_landing(client):
-# 	landing = client.get("/")
-# 	assert landing.status_code == 200
-aircraft_backup = ""
-
+#SETUP
 # captures original pickle file, clear the file for the tests so that 
 # actual contents don't interfere with tests and tests are consistent
-def test_setup():
-	print("Starting Setup - backing up Aircraft file")
-	aircraft_backup = app.convert_aircraft_to_python_object()
-	# erase test file
-	f = open("aircraft_test", "w")
-	f.close()
-
+print("Starting Setup - backing up Aircraft file")
+aircraft_backup = app.convert_aircraft_to_python_object()
+# erase test file
+with open("aircraft",'w') as file:
+    pass
 
 # tests creation of 1 aircraft
 def test_create_aircraft(client):
@@ -99,7 +93,12 @@ def test_calculate_segment_start_and_bearing():
 	# waypoints, RGAAF, Lampasas, Lake buchanan back to hood, roughly 81 miles
 	waypoints = ["31.064421,-97.829107","31.064094,-98.181702","30.826594,-98.418648"]
 
+
 	distance_traveled = 5
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 0
+
+	distance_traveled = 6
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 
