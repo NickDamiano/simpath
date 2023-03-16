@@ -30,6 +30,22 @@ def start_flying():
 	write_aircraft(vessels_dict)
 	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
 
+@app.route('/startAll', methods=["POST"])
+def start_flying_all():
+	start_time = ""
+
+	# Convert existing aircraft to python object
+	vessels_dict = convert_aircraft_to_python_object()
+
+	# find the vessel name we are starting, set current time (time since epoch)
+	for vessel in vessels_dict:
+		start_time = time.time()
+		vessel["start_time"] = start_time
+
+	# Write the updated aircraft data back to file and return the name and start time as json object
+	write_aircraft(vessels_dict)
+	return jsonify(vessel_dict)
+
 # Takes a json file with 1 or more aircraft, pulls the existing planes, appends the new planes to it and saves it. 
 @app.route('/CreateAircraft', methods=['POST'])
 def create_aircraft():
@@ -118,7 +134,6 @@ def print_all_aircraft():
 # 	will return to start and continue the track. so it figures out that full 
 # 	loop distance in miles and returns it.
 def calculate_roundtrip_distance(waypoints):
-	print("round trip distance goes here")
 	total_distance = 0
 	# for waypoint in waypoints:
 	# We measure from index to index+1 so we want to stop before out of index error
@@ -141,6 +156,9 @@ def calculate_roundtrip_distance(waypoints):
 	lat2 = split_end[0]
 	lon2 = split_end[1]
 	total_distance += position.calculate_distance(lat1,lon1,lat2,lon2)
+	# convert total distance to meters
+	total_distance *= 1609.344
+
 	return total_distance
 
 # Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
@@ -199,6 +217,8 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 
 
 	# return waypoint index of segment start and bearing
+	print("segment start")
+	print(segment_start)
 	return segment_start, segment_bearing
 
 

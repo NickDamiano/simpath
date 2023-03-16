@@ -88,17 +88,23 @@ def test_all_aircraft_positions(client):
 	all_aircraft = rv.get_json()
 	assert len(all_aircraft) == 1
 
+# not working
+def test_start_all(client):
+	rv = client.post('/startAll')
+	json_data = rv.get_json()
+	assert json_data["start_time"] != ""
+
 def test_calculate_segment_start_and_bearing():
 	# test for distance between second and third waypiont
 	# waypoints, RGAAF, Lampasas, Lake buchanan back to hood, roughly 81 miles
 	waypoints = ["31.064421,-97.829107","31.064094,-98.181702","30.826594,-98.418648"]
 
-
-	distance_traveled = 5
+	distance_traveled = 0
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
+	
 
-	distance_traveled = 6
+	distance_traveled = 5.443
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 
@@ -133,14 +139,15 @@ def test_calculate_distance():
 def test_roundtrip_distance():
 	waypoints = ["4.704659,-74.069079","4.077158,-73.563053","0.742613,-75.237578"]
 	roundtrip_distance = app.calculate_roundtrip_distance(waypoints)
-	assert int(roundtrip_distance) == 596
+	assert int(roundtrip_distance) == 959315
 
 #restore pickle aircraft file
 def test_restore():
 	print("Starting Teardown - restoring original Aircraft file")
 	app.write_aircraft(aircraft_backup)
 
-# add test to start all aircraft
+# add test to stop by name
+# add test to stop all 
 # add test to wipe all aircraft from the file
 # add test to stop by name
 # add test to stop all
