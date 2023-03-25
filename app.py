@@ -44,7 +44,7 @@ def start_flying_all():
 
 	# Write the updated aircraft data back to file and return the name and start time as json object
 	write_aircraft(vessels_dict)
-	return jsonify(vessel_dict)
+	return jsonify(vessels_dict)
 
 # Takes a json file with 1 or more aircraft, pulls the existing planes, appends the new planes to it and saves it. 
 @app.route('/CreateAircraft', methods=['POST'])
@@ -100,6 +100,7 @@ def get_all_positions():
 			# end_point = aircraft["waypoints"][1]
 			# current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
 			# 	end_point["latitude"], end_point["longitude"])
+			# convert distance traveled  (meters) to km for this method
 			new_long, new_lat = position.calculate(start_lat, start_long, 
 				distance_traveled / 1000,current_bearing)
 			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
@@ -156,8 +157,7 @@ def calculate_roundtrip_distance(waypoints):
 	lat2 = split_end[0]
 	lon2 = split_end[1]
 	total_distance += position.calculate_distance(lat1,lon1,lat2,lon2)
-	# convert total distance to meters
-	total_distance *= 1609.344
+	total_distance
 
 	return total_distance
 
@@ -181,13 +181,13 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 	# index of segment we're checking from
 	segment_start 		= 0
 	while(total_distance_calculated < relative_distance_so_far):
-
 		# if we have reached the end of the waypoints and have still not measured up to the
 		# 	round trip distance that means we're on the final leg from end to start
 		#	So we break out of the loop after setting the index of the segment start
 		#	to the last point in the waypoints (meaning traveling from end to start point)
 		if segment_start == len(converted_waypoints)-1:
 			# if there are 3 waypoints then the index is 3 -1 = 2 since 0 index
+
 			break
 		segment_end = segment_start + 1
 		start_lat 		= converted_waypoints[segment_start].split(",")[0]
@@ -195,6 +195,7 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 		end_lat			= converted_waypoints[segment_end].split(",")[0]
 		end_long 		= converted_waypoints[segment_end].split(",")[1]		
 
+		# in meters
 		segment_distance = position.calculate_distance(start_lat,start_long,end_lat,end_long)
 		total_distance_calculated += segment_distance
 
@@ -214,7 +215,6 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 		end_long 		= converted_waypoints[0].split(",")[1]	
 	# otherwise the last calculated points in the while block above are still valid
 	segment_bearing = position.calculate_bearing(start_lat, start_long, end_lat, end_long) 
-
 
 	# return waypoint index of segment start and bearing
 	print("segment start")

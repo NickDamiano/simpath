@@ -35,5 +35,5 @@ def calculate_distance(lat1, long1, lat2, long2):
   # google if geopy calculates distance between two points
   start = (lat1,long1)
   end   = (lat2,long2)
-  distance = geodesic(start,end).miles
+  distance = geodesic(start,end).meters
   return distance
