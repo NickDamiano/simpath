@@ -108,13 +108,21 @@ def test_calculate_segment_start_and_bearing():
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 
-	distance_traveled = 30000
+	distance_traveled = 40000
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 1
 
-	distance_traveled = 70000
+	distance_traveled = 80000
 	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 2
+
+	distance_traveled = 145000
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 0
+
+	distance_traveled = 180000
+	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	assert index_of_segment_start == 1
 
 def test_calculate_bearing():
 	start_lat 	= "38.1234"
@@ -134,7 +142,7 @@ def test_calculate_distance():
 	end_long 	= -99.1234
 	distance = calculate_position.calculate_distance(start_lat,start_long,end_lat,end_long)
 	distance_int = int(distance)
-	assert distance_int == 87
+	assert distance_int == 141087
 
 def test_roundtrip_distance():
 	waypoints = ["4.704659,-74.069079","4.077158,-73.563053","0.742613,-75.237578"]
