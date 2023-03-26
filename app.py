@@ -174,6 +174,8 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 
 	# calculate relative distance in loop (100 mile loop, 103 miles traveled, 3 miles relative)
 	relative_distance_so_far = distance_so_far % roundtrip_distance
+	print(relative_distance_so_far)
+	print("relative distance so far above")
 
 	# calculate which of the waypoints is the start point (to use to see where along the segment
 	# the orbit/track the aircraft is)
@@ -181,15 +183,13 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 	# index of segment we're checking from
 	segment_start 		= 0
 	while(total_distance_calculated < relative_distance_so_far):
-		# if we have reached the end of the waypoints and have still not measured up to the
-		# 	round trip distance that means we're on the final leg from end to start
-		#	So we break out of the loop after setting the index of the segment start
-		#	to the last point in the waypoints (meaning traveling from end to start point)
-		if segment_start == len(converted_waypoints)-1:
-			# if there are 3 waypoints then the index is 3 -1 = 2 since 0 index
-
-			break
-		segment_end = segment_start + 1
+		# this if block checks if we've now iterated and are on the last waypoint. If so
+		#	We set the 
+		if segment_start != len(converted_waypoints)-1:
+			segment_end = segment_start + 1
+		else:
+			segment_end = 0
+		
 		start_lat 		= converted_waypoints[segment_start].split(",")[0]
 		start_long 		= converted_waypoints[segment_start].split(",")[1]
 		end_lat			= converted_waypoints[segment_end].split(",")[0]
