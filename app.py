@@ -88,21 +88,17 @@ def get_all_positions():
 		if aircraft["start_time"] != None:	
 			# Calculate distance traveled
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
+			print("distance traveled")
+
 			# pass the waypoints and distance to helper function, which figures out the start point
 			# 	and returns the bearing of travel, point to measure from, and distance from that point
-			start_index, current_bearing = calculate_segment_start_and_bearing(waypoints, distance_traveled)
+			start_index, current_bearing, relative_distance_traveled = calculate_segment_start_and_bearing(waypoints, distance_traveled)
 			start_point = waypoints[start_index]
 			start_lat 	= start_point.split(",")[0]
 			start_long	= start_point.split(",")[1]
 
-			# # current bearing is coordinates[0],coordinates[1] passed to calculate bearing
-			# start_point = aircraft["waypoints"][0]
-			# end_point = aircraft["waypoints"][1]
-			# current_bearing = position.calculate_bearing(start_point["latitude"], start_point["longitude"], 
-			# 	end_point["latitude"], end_point["longitude"])
-			# convert distance traveled  (meters) to km for this method
 			new_long, new_lat = position.calculate(start_lat, start_long, 
-				distance_traveled / 1000,current_bearing)
+				relative_distance_traveled / 1000,current_bearing)
 			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
 			aircraft_results.append(result)
 	return jsonify(aircraft_results)
@@ -164,7 +160,7 @@ def calculate_roundtrip_distance(waypoints):
 # Takes an array of waypoints, a distance traveled, and calculates which segments the aircraft would be on
 # then returns the latlong for last waypoint completed, bearing from that origin point, and distance forward
 def calculate_segment_start_and_bearing(waypoints, distance_so_far):
-	start_lat = start_long = end_lat = end_long = 0
+	start_lat = start_long = end_lat = end_long = segment_bearing = segment_projection_distance= 0
 	# rebuild the array with latlong only (convert city state)
 	# converted waypoints are array of strings of latlong separated by comma "33.1234,-98.1234"
 	converted_waypoints = convert_city_to_coords(waypoints)
@@ -174,8 +170,6 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 
 	# calculate relative distance in loop (100 mile loop, 103 miles traveled, 3 miles relative)
 	relative_distance_so_far = distance_so_far % roundtrip_distance
-	print(relative_distance_so_far)
-	print("relative distance so far above")
 
 	# calculate which of the waypoints is the start point (to use to see where along the segment
 	# the orbit/track the aircraft is)
@@ -184,7 +178,8 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 	segment_start 		= 0
 	while(total_distance_calculated < relative_distance_so_far):
 		# this if block checks if we've now iterated and are on the last waypoint. If so
-		#	We set the 
+		#	We set the endpoint to the first index so we can loop back there, otherwise, 
+		#   segment end is next waypoint in the list of waypoints
 		if segment_start != len(converted_waypoints)-1:
 			segment_end = segment_start + 1
 		else:
@@ -195,79 +190,22 @@ def calculate_segment_start_and_bearing(waypoints, distance_so_far):
 		end_lat			= converted_waypoints[segment_end].split(",")[0]
 		end_long 		= converted_waypoints[segment_end].split(",")[1]		
 
-		# in meters
 		segment_distance = position.calculate_distance(start_lat,start_long,end_lat,end_long)
+		up_to_this_segment_distance = total_distance_calculated
 		total_distance_calculated += segment_distance
 
-		# 	If total distance calculated is 
-		#	greater than relative travel meaning we've measured a to b and b to c and
-		#	distance of those segments is 200 miles and relative distance so far is
-		# 	180 miles. Otherwise we increment the index for next loop
+		segment_bearing = position.calculate_bearing(start_lat, start_long, end_lat, end_long) 
+		segment_projection_distance = relative_distance_so_far - up_to_this_segment_distance
+
+
+		# if the accumulated distances of waypoint/segment lengths is still less than the 
+		# 	total traveled by the aircraft (within the relative track distance), we increment
+		#	segment start to check the next segment length to see if the aircraft falls on that
+		#	segment
 		if(total_distance_calculated < relative_distance_so_far):
 			segment_start += 1
 
-	# calculate bearing - if the segment start is the last index then figure out the waypoints
-	#	for last and first
-	if(segment_start) == len(converted_waypoints)-1:
-		start_lat 		= converted_waypoints[-1].split(",")[0]
-		start_long 		= converted_waypoints[-1].split(",")[1]
-		end_lat			= converted_waypoints[0].split(",")[0]
-		end_long 		= converted_waypoints[0].split(",")[1]	
-	# otherwise the last calculated points in the while block above are still valid
-	segment_bearing = position.calculate_bearing(start_lat, start_long, end_lat, end_long) 
-
-	# return waypoint index of segment start and bearing
-	print("segment start")
-	print(segment_start)
-	return segment_start, segment_bearing
-
-
-		
-
-
-
-
-
-
-
-
-
-	
-		# if the distance traveled is beyond the current measured distance
-		#	it means either we've hit the last waypoint and it's continuing to fly
-		#	or it's on a further segment
-
-		# if distance > total_distance_calculated and 
-
-		# idea - calculate total time it will take to travel through all waypoints
-		#	back to the first waypoint and use that to reset the time at that epoch to do orbits
-		# or if single waypoint is passed in, when it creates the plane in the database
-		# it generates 50 points around it or some number divisible by 4. Then sets the orbit flag to true
-		# and 
-
-		# ok so we figure out the total distance for a single loop
-		# if the distance traveled exceeds that, we subtract the loop
-		# total distance until we get a negative nummber and that's the
-		# distance based off a single orbit. 
-		# so 33 miles on a 10 mile track means 3 miles into the track
-		# we then do the normal calculation to see which segment and bearing
-		# to next point
-
-		# set total_distance_calculated to zero
-		# iterate over waypoints starting with index 1
-		# get distance between last and current way point
-		# 
-
-		# determine waypoint type, city state or latlong
-
-		# set lat long variables
-		# 
-
-		# takes center point and orbit size and returns a set of points 
-		# 	excluding the center point that is the circular type track around 
-		# 	the center point and when it gets to the end it starts over
-		# def generate_orbit(waypoint, size):
-
+	return segment_start, segment_bearing, segment_projection_distance
 
 # Takes a list of waypoints either in lat long separated by comma or
 # city, state (Dallas,TX)
@@ -324,7 +262,8 @@ def loadall(file_name):
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
 
+# it's like it is getting the right waypoint index but the waypoint it measures from 
+# when it hits the end of the track is wrong and keeps changing. 
 
-# todo - something is wrong with the all locations it jumps between two sets of 
-# 	coordinates essentially and moves along with them
-# tests are failing and coordinates are all over the fuckign place
+# try it with three waypoints to see if it makes the turn right - also check the source waypoint
+# for the calculations 

@@ -100,28 +100,28 @@ def test_calculate_segment_start_and_bearing():
 	waypoints = ["31.064421,-97.829107","31.064094,-98.181702","30.826594,-98.418648"]
 
 	distance_traveled = 0
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 	
 
 	distance_traveled = 5443
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 
 	distance_traveled = 40000
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 1
 
 	distance_traveled = 80000
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 2
 
 	distance_traveled = 145000
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 0
 
 	distance_traveled = 180000
-	index_of_segment_start, bearing = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
+	index_of_segment_start, bearing, relative_distance = app.calculate_segment_start_and_bearing(waypoints, distance_traveled)
 	assert index_of_segment_start == 1
 
 def test_calculate_bearing():
