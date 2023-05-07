@@ -149,10 +149,24 @@ def test_roundtrip_distance():
 	roundtrip_distance = app.calculate_roundtrip_distance(waypoints)
 	assert int(roundtrip_distance) == 959315
 
+# def test_stop_all_aircraft():
+# 	result = app.stop_all_aircraft()
+
+# tests stopping a single aircraft
+def test_stop_by_name(client):
+	rv = client.post('/stop', json={
+		"aircraft_names": ["clipclop"]
+	})
+	json_data = rv.get_json()
+	assert json_data["start_time"] == None
+
+
 #restore pickle aircraft file
 def test_restore():
 	print("Starting Teardown - restoring original Aircraft file")
 	app.write_aircraft(aircraft_backup)
+
+
 
 # add test to stop by name
 # not handling when trying to start by name and name doesn't exist	

@@ -30,6 +30,26 @@ def start_flying():
 	write_aircraft(vessels_dict)
 	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
 
+# Sets the start time for a specific aircraft to current time in epoch and writes it back to the file
+@app.route('/stop', methods=['POST'])
+def stop_flying():
+
+	# identify the aircraft name from keys passed
+	aircraft_names	= request.get_json()
+	# Convert existing aircraft to python object
+	vessels_dict = convert_aircraft_to_python_object()
+
+	# find the vessel name we are starting, set current time (time since epoch)
+	for aircraft_name in aircraft_names["aircraft_names"]:
+		for vessel in vessels_dict:
+			if(vessel["name"] == aircraft_name):
+				start_time = None
+				vessel["start_time"] = start_time
+
+	# Write the updated aircraft data back to file and return the name and start time as json object
+	write_aircraft(vessels_dict)
+	return jsonify({"aircraft_name": aircraft_name, "start_time": start_time})
+
 @app.route('/startAll', methods=["POST"])
 def start_flying_all():
 	start_time = ""
@@ -57,6 +77,8 @@ def create_aircraft():
 
 	# parse the json file passed in
 	new_aircraft = request.get_json()
+
+	# Check for single points to translate into an array of orbit points
 
 	# Iterate through the new aircraft and append them to the existing aircraft
 	for aircraft in new_aircraft:

@@ -1,6 +1,3 @@
-api 
-create object 
-
 
 
 Ok so we can have waypoints that belong to an aircraft. and what it will do is calculate distance to waypoint 2 and if it has exceded the distance
@@ -29,6 +26,8 @@ for orbit, calculate 100 waypoints around the point, modulos to figure out where
 
 story to tell - solving the orbit problem - afghanistan FMS experience, figuring out distance traveled on new loop, 
 wrote a method to loop subtracting distance from total distance to distance so far realized after oh just write it with a modulo in one line
+Issues with odd behavior jumping between waypoints but all tests passing - because the distance passed in is in meters but the roundtrip distance is being calculated in kilometers (i think)
+the test we were using were unit tests so missing when it returned the bearing and segment that it was actually still projecting the full distance onto the second waypoint or return waypoint. it would project too far because it was the distance from the start point, not from the most recent turn - so several layers of errors on that one
 
 You could have an endpoint action. it could be loop, continue, stop, 
 
@@ -36,5 +35,8 @@ if loop
 fly back to first point
 if stop 
 if continue
+
+Features left to add before doing video
+get the 
 
 
