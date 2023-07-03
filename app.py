@@ -78,10 +78,26 @@ def create_aircraft():
 
 	# parse the json file passed in
 	new_aircraft = request.get_json()
+	orbit_waypoints = []
+	for index, aircraft in enumerate(new_aircraft):
+		# delete it from the old list if it already exists - we will replace it.
+		for old_index, old_aircraft in enumerate(all_aircraft):
+			if old_aircraft["name"] == aircraft["name"]:
+				del all_aircraft[old_index]
 
-	# Check for single points to translate into an array of orbit points
 
-	# convert the cities list into points to store back 
+		# Check for single points to translate into an array of orbit points
+		if(len(aircraft["waypoints"]) == 1):
+			orbit_center = convert_city_to_coords(aircraft["waypoints"])
+			orbit_radius = aircraft["orbit_size"]
+			orbit_orientation = aircraft["orbit_orientation"].lower()
+			orbit_waypoints = generate_orbit(orbit_center[0], orbit_radius, orbit_orientation)
+			aircraft["waypoints"] = orbit_waypoints
+		else:
+			# convert the cities list into points to store back 
+			orbit_waypoints = convert_city_to_coords(aircraft["waypoints"])
+			aircraft["waypoints"]= orbit_waypoints
+		# replace existing aircraft if the name is the same
 
 	# Iterate through the new aircraft and append them to the existing aircraft
 	for aircraft in new_aircraft:
