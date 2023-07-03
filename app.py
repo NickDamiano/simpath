@@ -6,6 +6,7 @@ import time
 import json
 import pandas as pd
 import numpy as np 
+from flask_cors import cross_origin
 
 app = Flask(__name__)
 
@@ -80,6 +81,8 @@ def create_aircraft():
 
 	# Check for single points to translate into an array of orbit points
 
+	# convert the cities list into points to store back 
+
 	# Iterate through the new aircraft and append them to the existing aircraft
 	for aircraft in new_aircraft:
 		all_aircraft.append(aircraft)
@@ -93,6 +96,7 @@ def create_aircraft():
 
 # Returns all aircraft positions in json object. 
 @app.route('/AllAircraftPositions', methods=["GET"])
+@cross_origin()
 def get_all_positions():
 	# Set Initial variable data to base value
 	distance_traveled = 0
@@ -110,18 +114,22 @@ def get_all_positions():
 		if aircraft["start_time"] != None:	
 			# Calculate distance traveled
 			distance_traveled = int((time.time() - aircraft["start_time"]) * (aircraft["cruising_speed"] * .514444))
-			print("distance traveled")
 
 			# pass the waypoints and distance to helper function, which figures out the start point
 			# 	and returns the bearing of travel, point to measure from, and distance from that point
 			start_index, current_bearing, relative_distance_traveled = calculate_segment_start_and_bearing(waypoints, distance_traveled)
 			start_point = waypoints[start_index]
-			start_lat 	= start_point.split(",")[0]
-			start_long	= start_point.split(",")[1]
 
+			# if city convert it to coords
+			start_point = convert_city_to_coords([start_point])
+			
+			# Because the converted city is returned in a list (since we can pass multiple cities to get a list of converted coords back),
+			# we reference zero index here to get the 1st and only waypoint in this list to be split into lat long for the position calculation
+			start_lat 	= start_point[0].split(",")[0]
+			start_long	= start_point[0].split(",")[1]
 			new_long, new_lat = position.calculate(start_lat, start_long, 
 				relative_distance_traveled / 1000,current_bearing)
-			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long }
+			result = {"name": aircraft["name"], "altitude": aircraft["altitude"], "new_lat": new_lat, "new_long": new_long, "type": aircraft["aircraft_type"].upper(), "speed": aircraft["cruising_speed"], "start_time": aircraft["start_time"] }
 			aircraft_results.append(result)
 	return jsonify(aircraft_results)
 
@@ -252,6 +260,21 @@ def convert_city_to_coords(waypoints):
 		else:
 			return False
 	return waypoint_results
+
+# takes a set of coordinates lat long divided by comma as string, orbit size, and if left or right hand orbit. Returns a list
+# of the orbit points (360 points)
+def generate_orbit(center_point, orbit_size,left_hand=False):
+	orbit_points = []
+	lat1, lon1 = center_point.split(",")
+	for i in range(360):
+		single_point = position.calculate(lat1, lon1, orbit_size, i)
+		lat2 = str(single_point[0])
+		lon2 = str(single_point[1])
+		combined_lat_long = lat2 + "," + lon2
+		orbit_points.append(combined_lat_long)
+	if left_hand:
+		orbit_points.reverse()
+	return orbit_points
 
 # Retrieves the aircraft from the pickle and creates a generator which is then
 # converted to a python dict and returned the first index. somehow it's a list within a list

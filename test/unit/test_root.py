@@ -149,16 +149,33 @@ def test_roundtrip_distance():
 	roundtrip_distance = app.calculate_roundtrip_distance(waypoints)
 	assert int(roundtrip_distance) == 959315
 
+def test_orbit():
+	center_point = "31.200000,-98.500000"
+	orbit_size = 3
+	result = app.generate_orbit(center_point,orbit_size)
+	assert len(result) == 360
+
 # def test_stop_all_aircraft():
 # 	result = app.stop_all_aircraft()
 
 # tests stopping a single aircraft
 def test_stop_by_name(client):
+	# assert it is flying
+	rv = client.get('/AllAircraftPositions')
+	all_aircraft = rv.get_json()
+	for aircraft in all_aircraft:
+		if aircraft["name"] == "clipclop":
+			assert aircraft["start_time"] != None
+	# Stop the aircraft
 	rv = client.post('/stop', json={
 		"aircraft_names": ["clipclop"]
 	})
+	# check it is stopped - make sure its not in the flying return
+	rv = client.get('/AllAircraftPositions')
 	json_data = rv.get_json()
-	assert json_data["start_time"] == None
+	for aircraft in json_data:
+		assert aircraft["name"] != "clipclop"
+			
 
 
 #restore pickle aircraft file

@@ -1,4 +1,3 @@
-import math
 import geopy
 import pyproj
 import pdb
@@ -17,8 +16,6 @@ def calculate(lat1, lon1, distance, bearing):
 
   lat2, lon2 = destination.latitude, destination.longitude
   return lat2, lon2
-  print(lat2)
-  print(lon2)
 
 def calculate_bearing(lat1, long1, lat2, long2):
   geodesic = pyproj.Geod(ellps='WGS84')
