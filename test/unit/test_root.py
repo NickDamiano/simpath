@@ -155,6 +155,46 @@ def test_orbit():
 	result = app.generate_orbit(center_point,orbit_size)
 	assert len(result) == 360
 
+def test_no_duplicates(client):
+	name = "Test6"
+	dup_count = 0
+	is_present = False
+	post_result = client.post('/CreateAircraft', json=[
+	{
+		"name": "Test6",
+		"altitude": 10000,
+		"aircraft_type": "F-18",
+		"cruising_speed": 450,
+		"start_time": None,
+		"waypoints": ["34.918010,-117.891509","33.128416,-117.280023"]
+	}
+	])
+
+	# list aircraft to make sure it's there, then try to create it again with a different cruising speed
+	all_aircraft = client.get('/GetAllAircraft')
+	all_aircraft = all_aircraft.get_json()
+	for aircraft in all_aircraft:
+		if aircraft["name"] == "Test6":
+			is_present = True 
+	assert is_present
+	post_result = client.post('/CreateAircraft', json=[
+	{
+		"name": "Test6",
+		"altitude": 10000,
+		"aircraft_type": "F-18",
+		"cruising_speed": 500,
+		"start_time": None,
+		"waypoints": ["34.918010,-117.891509","33.128416,-117.280023"]
+	}
+	])
+	all_aircraft = client.get('/GetAllAircraft')
+	all_aircraft = all_aircraft.get_json()
+	for updated_aircraft in all_aircraft:
+		if updated_aircraft["name"] == "Test6":
+			dup_count +=1
+			assert updated_aircraft["cruising_speed"] == 500
+	assert dup_count == 1
+
 # def test_stop_all_aircraft():
 # 	result = app.stop_all_aircraft()
 
@@ -185,7 +225,6 @@ def test_restore():
 
 
 
-# add test to stop by name
 # not handling when trying to start by name and name doesn't exist	
 # add test to stop all 
 # add test to wipe all aircraft from the file
