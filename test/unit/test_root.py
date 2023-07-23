@@ -153,7 +153,8 @@ def test_orbit():
 	center_point = "31.200000,-98.500000"
 	orbit_size = 3
 	result = app.generate_orbit(center_point,orbit_size)
-	assert len(result) == 360
+	assert len(result) == 100
+
 
 def test_no_duplicates(client):
 	name = "Test6"

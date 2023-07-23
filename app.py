@@ -92,6 +92,7 @@ def create_aircraft():
 			orbit_radius = aircraft["orbit_size"]
 			orbit_orientation = aircraft["orbit_orientation"].lower()
 			orbit_waypoints = generate_orbit(orbit_center[0], orbit_radius, orbit_orientation)
+
 			aircraft["waypoints"] = orbit_waypoints
 		else:
 			# convert the cities list into points to store back 
@@ -193,6 +194,7 @@ def calculate_roundtrip_distance(waypoints):
 			total_distance += segment_distance
 	# Finally add the segment from end to start since we're looping these tracks
 	split_start = waypoints[-1].split(",")
+
 	split_end = waypoints[0].split(",")
 	lat1 = split_start[0]
 	lon1 = split_start[1]
@@ -262,8 +264,10 @@ def convert_city_to_coords(waypoints):
 	with open('uscities', 'rb') as f:
 		cities = pickle.load(f)
 	for waypoint in waypoints:
-		# check if first character in waypoint is numeric in which case we treat it as a coord
-		if waypoint[0].isnumeric():
+		# check if last character in waypoint is numeric in which case we treat it as a coord
+		# first can be a negative for lat long
+
+		if waypoint[-1].isnumeric():
 			waypoint_results.append(waypoint)
 			# skip the remainder of the loop since we know this is a coord
 			continue
@@ -278,17 +282,18 @@ def convert_city_to_coords(waypoints):
 	return waypoint_results
 
 # takes a set of coordinates lat long divided by comma as string, orbit size, and if left or right hand orbit. Returns a list
-# of the orbit points (360 points)
-def generate_orbit(center_point, orbit_size,left_hand=False):
+# of the orbit points (100 points)
+def generate_orbit(center_point, orbit_size,orientation="right"):
 	orbit_points = []
 	lat1, lon1 = center_point.split(",")
-	for i in range(360):
-		single_point = position.calculate(lat1, lon1, orbit_size, i)
+	for i in range(100):
+		heading = i * 3.6
+		single_point = position.calculate(lat1, lon1, orbit_size, heading)
 		lat2 = str(single_point[0])
 		lon2 = str(single_point[1])
 		combined_lat_long = lat2 + "," + lon2
 		orbit_points.append(combined_lat_long)
-	if left_hand:
+	if orientation == "left":
 		orbit_points.reverse()
 	return orbit_points
 
